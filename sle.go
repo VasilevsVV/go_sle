@@ -7,7 +7,7 @@ import (
 
 // Sle is a structure to represent System of Linear Equations
 type Sle struct {
-	matrix    [][]float64
+	matrix    matrSlice
 	solutions []float64
 }
 
