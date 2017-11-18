@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -32,7 +31,7 @@ func CreateSle(m [][]float64) (Sle, error) {
 	if test {
 		return Sle{matrix, solutions}, nil
 	}
-	return Sle{nil, nil}, errors.New("Not valid matrix passed to CreateSle")
+	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 //Print prints out Sle to console
