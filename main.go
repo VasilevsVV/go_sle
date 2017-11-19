@@ -7,7 +7,7 @@ func main() {
 	if err == nil {
 		sle.Print()
 	} else {
-		fmt.Println("Error")
+		fmt.Println(err)
 	}
 
 	var test matrSlice = [][]float64{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
