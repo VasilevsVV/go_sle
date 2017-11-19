@@ -25,6 +25,16 @@ func (m matrSlice) checkSquarness() bool {
 	return true
 }
 
+func (m matrSlice) checkRect() bool {
+	size := len(m[0])
+	for _, l := range m {
+		if len(l) != size {
+			return false
+		}
+	}
+	return true
+}
+
 // GetMinor gets a n-th minor from matrix
 func (m matrSlice) GetMinor(n int) (matrSlice, error) {
 	if !m.checkSquarness() {
@@ -52,6 +62,32 @@ func (m matrSlice) Transponate() (matrSlice, error) {
 		}
 	}
 	return res, nil
+}
+
+func (m matrSlice) Mult(f float64) matrSlice {
+	for i := 0; i < len(m); i++ {
+		for j := 0; j < len(m[i]); j++ {
+			m[i][j] *= f
+		}
+	}
+	return m
+}
+
+func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
+	if len(m) != len(m1) {
+		return nil, fmt.Errorf("Sizzes of matrixes are not equal:\nLen1 = %d | Len2 = %d",
+			len(m), len(m1))
+	}
+	if !m.checkRect() || !m1.checkRect() {
+		return nil, fmt.Errorf("Some of matrixes is not rectangle")
+	}
+	res := make(matrSlice, len(m), len(m))
+	for i := 0; i < len(res); i++ {
+		for j := 0; j < len(m1); j++ {
+
+		}
+	}
+	return nil, nil
 }
 
 func (m matrSlice) Print() {
