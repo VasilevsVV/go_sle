@@ -36,13 +36,18 @@ func (m matrSlice) checkRect() bool {
 }
 
 // GetMinor gets a n-th minor from matrix
-func (m matrSlice) getMinor(n int) matrSlice {
+func (m matrSlice) getMinor(x, y int) matrSlice {
 	var res [][]float64
 	for i, l := range m {
-		if i == n {
-			continue
+		if i != x {
+			size := len(l)
+			newl := make([]float64, size-1, size-1)
+			copy(newl, l[:y])
+			for j := y + 1; j < size; j++ {
+				newl[j-1] = l[j]
+			}
+			res = append(res, newl)
 		}
-		res = append(res, l[1:])
 	}
 	return res
 }
@@ -54,7 +59,7 @@ func (m matrSlice) determinant() float64 {
 	}
 	var res float64
 	for i, f := 0, 1.0; i < length; i, f = i+1, -f {
-		res += f * m[i][0] * m.getMinor(i).determinant()
+		res += f * m[i][0] * m.getMinor(i, 0).determinant()
 	}
 	return res
 }
