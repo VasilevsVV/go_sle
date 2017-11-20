@@ -81,13 +81,21 @@ func makeMatrix(x, y int) matrSlice {
 	return res
 }
 
-func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
-	if !m.checkRect() || !m1.checkRect() {
-		return nil, fmt.Errorf("Some of matrixes is not rectangle")
+func testForMult(m1, m2 matrSlice) error {
+	if !m1.checkRect() || !m2.checkRect() {
+		return fmt.Errorf("Some of matrixes is not rectangle")
 	}
-	if len(m[0]) != len(m1) {
-		return nil, fmt.Errorf("Number of columns in 1-st matrix not equal to number of lines in 2-nd:\ncol1 = %d | line2 = %d",
-			len(m[0]), len(m1))
+	if len(m1[0]) != len(m2) {
+		return fmt.Errorf("Number of columns in 1-st matrix not equal to number of lines in 2-nd:\ncol1 = %d | line2 = %d",
+			len(m1[0]), len(m2))
+	}
+	return nil
+}
+
+func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
+	err := testForMult(m, m1)
+	if err != nil {
+		return nil, err
 	}
 	size := len(m1)
 	res := makeMatrix(len(m1), len(m1[0]))
