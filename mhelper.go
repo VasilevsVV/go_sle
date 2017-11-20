@@ -73,6 +73,14 @@ func (m matrSlice) Mult(f float64) matrSlice {
 	return m
 }
 
+func makeMatrix(x, y int) matrSlice {
+	res := make(matrSlice, x, x)
+	for i := 0; i < x; i++ {
+		res[i] = make([]float64, y, y)
+	}
+	return res
+}
+
 func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
 	if !m.checkRect() || !m1.checkRect() {
 		return nil, fmt.Errorf("Some of matrixes is not rectangle")
@@ -82,11 +90,7 @@ func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
 			len(m[0]), len(m1))
 	}
 	size := len(m1)
-	length := len(m1[0])
-	res := make(matrSlice, len(m1), len(m1))
-	for i := 0; i < len(res); i++ {
-		res[i] = make([]float64, length, length)
-	}
+	res := makeMatrix(len(m1), len(m1[0]))
 	for i := 0; i < len(res); i++ {
 		for j := 0; j < len(res[i]); j++ {
 			for k := 0; k < size; k++ {
