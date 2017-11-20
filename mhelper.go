@@ -74,20 +74,27 @@ func (m matrSlice) Mult(f float64) matrSlice {
 }
 
 func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
-	if len(m) != len(m1) {
-		return nil, fmt.Errorf("Sizzes of matrixes are not equal:\nLen1 = %d | Len2 = %d",
-			len(m), len(m1))
-	}
 	if !m.checkRect() || !m1.checkRect() {
 		return nil, fmt.Errorf("Some of matrixes is not rectangle")
 	}
-	res := make(matrSlice, len(m), len(m))
+	if len(m[0]) != len(m1) {
+		return nil, fmt.Errorf("Number of columns in 1-st matrix not equal to number of lines in 2-nd:\ncol1 = %d | line2 = %d",
+			len(m[0]), len(m1))
+	}
+	size := len(m1)
+	length := len(m1[0])
+	res := make(matrSlice, len(m1), len(m1))
 	for i := 0; i < len(res); i++ {
-		for j := 0; j < len(m1); j++ {
-
+		res[i] = make([]float64, length, length)
+	}
+	for i := 0; i < len(res); i++ {
+		for j := 0; j < len(res[i]); j++ {
+			for k := 0; k < size; k++ {
+				res[i][j] += m[i][k] * m1[k][j]
+			}
 		}
 	}
-	return nil, nil
+	return res, nil
 }
 
 func (m matrSlice) Print() {
