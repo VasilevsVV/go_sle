@@ -8,7 +8,6 @@ import (
 type Sle struct {
 	matrix    MatrSlice
 	solutions []float64
-	size      int
 }
 
 func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
@@ -30,9 +29,9 @@ func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
 func CreateSle(m [][]float64) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
-		return Sle{matrix, solutions, len(matrix)}, nil
+		return Sle{matrix, solutions}, nil
 	}
-	return Sle{nil, nil, 0}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (m MatrSlice) determinant() float64 {
@@ -47,15 +46,26 @@ func (m MatrSlice) determinant() float64 {
 	return res
 }
 
-func (sle Sle) getMinorsMatrix() MatrSlice {
-	size := len(sle.matrix)
+func (m MatrSlice) getMinorsMatrix() MatrSlice {
+	size := len(m)
 	res := MakeMatrix(size, size)
-	for i, l := range sle.matrix {
+	for i, l := range m {
 		for j := range l {
-			res[i][j] = sle.matrix.GetMinor(i, j).determinant()
+			res[i][j] = m.GetMinor(i, j).determinant()
 		}
 	}
 	return res
+}
+
+func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
+	flag := 1
+	res := MakeMatrix(len(m), len(m))
+	for i, l := range m {
+		for j, el := range l {
+			res[i][j] = el * float64(flag)
+			flag = -flag
+		}
+	}
 }
 
 //Print prints out Sle to console
