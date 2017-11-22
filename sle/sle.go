@@ -1,4 +1,4 @@
-package main
+package sle
 
 import (
 	"fmt"
@@ -6,8 +6,9 @@ import (
 
 // Sle is a structure to represent System of Linear Equations
 type Sle struct {
-	matrix    matrSlice
+	matrix    MatrSlice
 	solutions []float64
+	size      int
 }
 
 func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
@@ -29,9 +30,21 @@ func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
 func CreateSle(m [][]float64) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
-		return Sle{matrix, solutions}, nil
+		return Sle{matrix, solutions, len(matrix)}, nil
 	}
-	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, 0}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+}
+
+func (sle Sle) getMinorsMatrix() MatrSlice {
+	size := len(sle.matrix)
+	res := MakeMatrix(size, size)
+	for i, l := range sle.matrix {
+		for j := range l {
+			el, _ := sle.matrix.GetMinor(i, j).Determinant()
+			res[i][j] = el
+		}
+	}
+	return res
 }
 
 //Print prints out Sle to console

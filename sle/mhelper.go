@@ -1,11 +1,12 @@
-package main
+package sle
 
 import (
 	"errors"
 	"fmt"
 )
 
-type matrSlice [][]float64
+//MatrSlice a type for making methods for simple slice
+type MatrSlice [][]float64
 
 // SwpLines swaps lines in matrix
 func swpLines(m *[][]float64, l1, l2 int) {
@@ -15,7 +16,7 @@ func swpLines(m *[][]float64, l1, l2 int) {
 }
 
 // checkSquarness checks if matrix is square
-func (m matrSlice) checkSquarness() int {
+func (m MatrSlice) checkSquarness() int {
 	size := len(m)
 	for _, l := range m {
 		if len(l) != size {
@@ -25,7 +26,7 @@ func (m matrSlice) checkSquarness() int {
 	return size
 }
 
-func (m matrSlice) checkRect() bool {
+func (m MatrSlice) checkRect() bool {
 	size := len(m[0])
 	for _, l := range m {
 		if len(l) != size {
@@ -36,7 +37,7 @@ func (m matrSlice) checkRect() bool {
 }
 
 // GetMinor gets a n-th minor from matrix
-func (m matrSlice) getMinor(x, y int) matrSlice {
+func (m MatrSlice) GetMinor(x, y int) MatrSlice {
 	var res [][]float64
 	for i, l := range m {
 		if i != x {
@@ -52,20 +53,20 @@ func (m matrSlice) getMinor(x, y int) matrSlice {
 	return res
 }
 
-func (m matrSlice) determinant() float64 {
+func (m MatrSlice) determinant() float64 {
 	length := len(m)
 	if length == 2 {
 		return m[0][0]*m[1][1] - m[0][1]*m[1][0]
 	}
 	var res float64
 	for i, f := 0, 1.0; i < length; i, f = i+1, -f {
-		res += f * m[i][0] * m.getMinor(i, 0).determinant()
+		res += f * m[i][0] * m.GetMinor(i, 0).determinant()
 	}
 	return res
 }
 
 //Determinant gets determinant of matrix
-func (m matrSlice) Determinant() (float64, error) {
+func (m MatrSlice) Determinant() (float64, error) {
 	size := m.checkSquarness()
 	if size < 0 {
 		return 0, errors.New("Matrix is not square")
@@ -77,11 +78,11 @@ func (m matrSlice) Determinant() (float64, error) {
 }
 
 // Transponate transponates matrix
-func (m matrSlice) Transponate() (matrSlice, error) {
+func (m MatrSlice) Transponate() (MatrSlice, error) {
 	if m.checkSquarness() >= 0 {
 		return nil, errors.New("Matrix is not Square")
 	}
-	res := make(matrSlice, len(m), len(m))
+	res := make(MatrSlice, len(m), len(m))
 	for _, l := range m {
 		for j, el := range l {
 			res[j] = append(res[j], el)
@@ -90,7 +91,8 @@ func (m matrSlice) Transponate() (matrSlice, error) {
 	return res, nil
 }
 
-func (m matrSlice) Mult(f float64) matrSlice {
+//Mult makes new matrix with every value multipied by value f
+func (m MatrSlice) Mult(f float64) MatrSlice {
 	for i := 0; i < len(m); i++ {
 		for j := 0; j < len(m[i]); j++ {
 			m[i][j] *= f
@@ -99,15 +101,16 @@ func (m matrSlice) Mult(f float64) matrSlice {
 	return m
 }
 
-func makeMatrix(x, y int) matrSlice {
-	res := make(matrSlice, x, x)
+//MakeMatrix make and returns MatrSlice
+func MakeMatrix(x, y int) MatrSlice {
+	res := make(MatrSlice, x, x)
 	for i := 0; i < x; i++ {
 		res[i] = make([]float64, y, y)
 	}
 	return res
 }
 
-func testForMult(m1, m2 matrSlice) error {
+func testForMult(m1, m2 MatrSlice) error {
 	if !m1.checkRect() || !m2.checkRect() {
 		return fmt.Errorf("Some of matrixes is not rectangle")
 	}
@@ -118,13 +121,14 @@ func testForMult(m1, m2 matrSlice) error {
 	return nil
 }
 
-func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
+//Multm multipies two matrixes
+func (m MatrSlice) Multm(m1 MatrSlice) (MatrSlice, error) {
 	err := testForMult(m, m1)
 	if err != nil {
 		return nil, err
 	}
 	size := len(m1)
-	res := makeMatrix(len(m1), len(m1[0]))
+	res := MakeMatrix(len(m1), len(m1[0]))
 	for i := 0; i < len(res); i++ {
 		for j := 0; j < len(res[i]); j++ {
 			for k := 0; k < size; k++ {
@@ -135,7 +139,8 @@ func (m matrSlice) Multm(m1 matrSlice) (matrSlice, error) {
 	return res, nil
 }
 
-func (m matrSlice) Print() {
+//Print prints a matrix
+func (m MatrSlice) Print() {
 	for _, l := range m {
 		j := 0
 		fmt.Printf("| ")
