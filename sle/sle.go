@@ -66,6 +66,7 @@ func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
 			flag = -flag
 		}
 	}
+	return res
 }
 
 //Print prints out Sle to console
