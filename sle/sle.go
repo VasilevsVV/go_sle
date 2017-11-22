@@ -35,13 +35,24 @@ func CreateSle(m [][]float64) (Sle, error) {
 	return Sle{nil, nil, 0}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
+func (m MatrSlice) determinant() float64 {
+	length := len(m)
+	if length == 2 {
+		return m[0][0]*m[1][1] - m[0][1]*m[1][0]
+	}
+	var res float64
+	for i, f := 0, 1.0; i < length; i, f = i+1, -f {
+		res += f * m[i][0] * m.GetMinor(i, 0).determinant()
+	}
+	return res
+}
+
 func (sle Sle) getMinorsMatrix() MatrSlice {
 	size := len(sle.matrix)
 	res := MakeMatrix(size, size)
 	for i, l := range sle.matrix {
 		for j := range l {
-			el, _ := sle.matrix.GetMinor(i, j).Determinant()
-			res[i][j] = el
+			res[i][j] = sle.matrix.GetMinor(i, j).determinant()
 		}
 	}
 	return res
