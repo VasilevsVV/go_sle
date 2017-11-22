@@ -79,13 +79,13 @@ func (m MatrSlice) Determinant() (float64, error) {
 
 // Transponate transponates matrix
 func (m MatrSlice) Transponate() (MatrSlice, error) {
-	if m.checkSquarness() >= 0 {
+	if m.checkRect() {
 		return nil, errors.New("Matrix is not Square")
 	}
-	res := make(MatrSlice, len(m), len(m))
-	for _, l := range m {
+	res := MakeMatrix(len(m), len(m[0]))
+	for i, l := range m {
 		for j, el := range l {
-			res[j] = append(res[j], el)
+			res[j][i] = el
 		}
 	}
 	return res, nil
