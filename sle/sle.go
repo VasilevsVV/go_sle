@@ -48,13 +48,15 @@ func (m MatrSlice) getMinorsMatrix() MatrSlice {
 }
 
 func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
-	flag := 1
+	flag, lineFlag := 1, 1
 	res := MakeMatrix(len(m), len(m))
 	for i, l := range m {
+		flag = lineFlag
 		for j, el := range l {
 			res[i][j] = el * float64(flag)
 			flag = -flag
 		}
+		lineFlag = -lineFlag
 	}
 	return res
 }
