@@ -39,7 +39,9 @@ func (m MatrSlice) getMinorsMatrix() MatrSlice {
 	res := MakeMatrix(size, size)
 	for i, l := range m {
 		for j := range l {
-			res[i][j] = m.GetMinor(i, j).determinant()
+			det := m.GetMinor(i, j).determinant()
+			//fmt.Printf("[DETERMINANT = %f]\n", det)
+			res[i][j] = det
 		}
 	}
 	return res
