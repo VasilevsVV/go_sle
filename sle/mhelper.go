@@ -199,12 +199,19 @@ func (m MatrSlice) EqualTo(m2 MatrSlice) bool {
 
 //Print prints a matrix
 func (m MatrSlice) Print() {
+	fmt.Print(m.Prints())
+}
+
+//Prints return string with printed matrix
+func (m MatrSlice) Prints() string {
+	var res string
 	for _, l := range m {
 		j := 0
-		fmt.Printf("| ")
+		res += "| "
 		for ; j < len(l)-1; j++ {
-			fmt.Printf("%f, ", l[j])
+			res += fmt.Sprintf("%f,\t", l[j])
 		}
-		fmt.Printf("%f |\n", l[j])
+		res += fmt.Sprintf("%f |\n", l[j])
 	}
+	return res
 }

@@ -88,11 +88,19 @@ func (sle Sle) Solve() ([]float64, error) {
 
 //Print prints out Sle to console
 func (sle Sle) Print() {
+	fmt.Print(sle.Prints())
+}
+
+//Prints returns string with printed sle
+func (sle Sle) Prints() string {
+	var res string
 	for i, l := range sle.matrix {
 		j := 0
+		res += "|| "
 		for ; j < len(l)-1; j++ {
-			fmt.Printf("%f, ", l[j])
+			res += fmt.Sprintf("%f,\t", l[j])
 		}
-		fmt.Printf("%f | %f\n", l[j], sle.solutions[i])
+		res += fmt.Sprintf("%f\t| %f ||\n", l[j], sle.solutions[i])
 	}
+	return res
 }
