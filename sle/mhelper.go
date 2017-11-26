@@ -3,6 +3,7 @@ package sle
 import (
 	"errors"
 	"fmt"
+	"math"
 )
 
 //MatrSlice a type for making methods for simple slice
@@ -166,6 +167,21 @@ func (m MatrSlice) matrToVector() []float64 {
 		}
 	}
 	return res
+}
+
+//CompareSlices is comparing two slices
+func CompareSlices(sl1, sl2 []float64) bool {
+	if len(sl1) != len(sl2) {
+		return false
+	}
+	for i, el := range sl1 {
+		if el != sl2[i] {
+			if math.Abs(el-sl2[i]) > math.Pow10(-9) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 //Print prints a matrix
