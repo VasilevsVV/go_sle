@@ -17,22 +17,14 @@ func getMatrixes() []sle.MatrSlice {
 }
 
 func TestSle(t *testing.T) {
-	cases := []struct {
-		in   sle.MatrSlice
-		want []float64
-	}{
-		{[][]float64{{1, 2, -3, 10}, {4, -5, 6, 20}, {-7, 8, 9, 30}},
-			[]float64{7.75, 6.5, float64(43.0 / 12.0)}},
-		{[][]float64{{4, 7, -3, -11, 7, 36},
-			{-2, 11, 3, 21, 0, -11},
-			{0, 0, 4, -16, -5, 27},
-			{26, 0, -7, -1, 18, -5},
-			{5, 8, 21, -5, 3, 13}},
-			[]float64{-40237.0 / 164073.0, 58706.0 / 23439.0, -35953.0 / 54691.0,
-				-289622.0 / 164073.0, -45491.0 / 164073}},
+	ins := getMatrixes()
+	results := [][]float64{
+		[]float64{7.75, 6.5, float64(43.0 / 12.0)},
+		[]float64{-40237.0 / 164073.0, 58706.0 / 23439.0, -35953.0 / 54691.0,
+			-289622.0 / 164073.0, -45491.0 / 164073},
 	}
-	for _, c := range cases {
-		Sle, err := sle.CreateSle(c.in)
+	for i, in := range ins {
+		Sle, err := sle.CreateSle(in)
 		if err != nil {
 			t.Error(err)
 		}
@@ -40,9 +32,9 @@ func TestSle(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if !sle.CompareSlices(res, c.want) {
+		if !sle.CompareSlices(res, results[i]) {
 			t.Errorf("Want : %f\nAnd res : %f\n Are not equal",
-				c.want, res)
+				results[i], res)
 		}
 	}
 }
