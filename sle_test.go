@@ -12,7 +12,7 @@ func TestSle1(t *testing.T) {
 		want []float64
 	}{
 		{[][]float64{{1, 2, -3, 10}, {4, -5, 6, 20}, {-7, 8, 9, 30}},
-			[]float64{7.75, 6.5, float64(43 / 12)}},
+			[]float64{7.75, 6.5, float64(43.0 / 12.0)}},
 	}
 	for _, c := range cases {
 		Sle, err := sle.CreateSle(c.in)
@@ -23,8 +23,8 @@ func TestSle1(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if res != c.want {
-			t.Errorf("Want : [elem0 , elem1 ...]\nAnd res : [elem0, elem1 ...]\n Are not equal",
+		if !sle.CompareSlices(res, c.want) {
+			t.Errorf("Want : %f\nAnd res : %f\n Are not equal",
 				c.want, res)
 		}
 	}
