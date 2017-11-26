@@ -34,18 +34,6 @@ func CreateSle(m [][]float64) (Sle, error) {
 	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
-func (m MatrSlice) determinant() float64 {
-	length := len(m)
-	if length == 2 {
-		return m[0][0]*m[1][1] - m[0][1]*m[1][0]
-	}
-	var res float64
-	for i, f := 0, 1.0; i < length; i, f = i+1, -f {
-		res += f * m[i][0] * m.GetMinor(i, 0).determinant()
-	}
-	return res
-}
-
 func (m MatrSlice) getMinorsMatrix() MatrSlice {
 	size := len(m)
 	res := MakeMatrix(size, size)
@@ -67,6 +55,35 @@ func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
 		}
 	}
 	return res
+}
+
+func (m MatrSlice) getInverseMatrix() (MatrSlice, error) {
+	det := m.determinant()
+	if det == 0 {
+		return nil, fmt.Errorf("Determinant of matrix is equal to 0")
+	}
+	minors := m.getMinorsMatrix()
+	compl := minors.getAlgComplemetsMatr()
+	transp, _ := compl.Transponate()
+	//res, _ := m.getMinorsMatrix().getAlgComplemetsMatr().Transponate()
+	return transp.Mult(1.0 / det), nil
+}
+
+//Solve returns a slice of solutions for SLE.
+func (sle Sle) Solve() ([]float64, error) {
+	inverseMatr, err := sle.matrix.getInverseMatrix()
+	if err != nil {
+		return nil, err
+	}
+	solutions := MakeMatrix(len(sle.matrix), 1)
+	for i, el := range sle.solutions {
+		solutions[i][0] = el
+	}
+	res, err := inverseMatr.Multm(solutions)
+	if err != nil {
+		return nil, err
+	}
+	return res.matrToVector(), nil
 }
 
 //Print prints out Sle to console
