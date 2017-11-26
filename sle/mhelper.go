@@ -83,7 +83,7 @@ func (m MatrSlice) Transponate() (MatrSlice, error) {
 	if !m.checkRect() {
 		return nil, errors.New("Matrix is not Square")
 	}
-	res := MakeMatrix(len(m), len(m[0]))
+	res := MakeMatrix(len(m[0]), len(m))
 	for i, l := range m {
 		for j, el := range l {
 			res[j][i] = el
@@ -179,6 +179,19 @@ func CompareSlices(sl1, sl2 []float64) bool {
 			if math.Abs(el-sl2[i]) > math.Pow10(-9) {
 				return false
 			}
+		}
+	}
+	return true
+}
+
+//EqualTo compares two MtrSlices
+func (m MatrSlice) EqualTo(m2 MatrSlice) bool {
+	if len(m) != len(m2) {
+		return false
+	}
+	for i, l := range m {
+		if !CompareSlices(l, m2[i]) {
+			return false
 		}
 	}
 	return true
