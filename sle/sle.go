@@ -8,6 +8,7 @@ import (
 type Sle struct {
 	matrix    MatrSlice
 	solutions []float64
+	enableLog bool
 }
 
 func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
@@ -26,16 +27,22 @@ func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
 }
 
 //CreateSle creates System of Linear Equations from simple matrix
-func CreateSle(m [][]float64) (Sle, error) {
+func CreateSle(m [][]float64, enableLog bool) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
-		return Sle{matrix, solutions}, nil
+		return Sle{matrix, solutions, enableLog}, nil
 	}
-	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, false}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
-	return Sle{matrix, solutions}
+	return Sle{matrix, solutions, sle.enableLog}
+}
+
+func (sle Sle) log(str string) {
+	if sle.enableLog {
+		fmt.Println(str)
+	}
 }
 
 func (sle Sle) getMinorsMatrix() Sle {
@@ -44,7 +51,7 @@ func (sle Sle) getMinorsMatrix() Sle {
 	for i, l := range sle.matrix {
 		for j := range l {
 			det := sle.matrix.GetMinor(i, j).determinant()
-			//fmt.Printf("[DETERMINANT = %f]\n", det)
+			sle.log(fmt.Sprintf("[DETERMINANT = %f]\n", det))
 			res[i][j] = det
 		}
 	}
