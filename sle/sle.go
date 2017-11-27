@@ -34,6 +34,10 @@ func CreateSle(m [][]float64) (Sle, error) {
 	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
+func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
+	return Sle{matrix, solutions}
+}
+
 func (sle Sle) getMinorsMatrix() Sle {
 	size := len(sle.matrix)
 	res := MakeMatrix(size, size)
@@ -44,7 +48,7 @@ func (sle Sle) getMinorsMatrix() Sle {
 			res[i][j] = det
 		}
 	}
-	return Sle{res, sle.solutions}
+	return sle.cloneSle(res, sle.solutions)
 }
 
 func (sle Sle) getAlgComplemetsMatr() Sle {
@@ -58,12 +62,12 @@ func (sle Sle) getAlgComplemetsMatr() Sle {
 		}
 		lineFlag = -lineFlag
 	}
-	return Sle{res, sle.solutions}
+	return sle.cloneSle(res, sle.solutions)
 }
 
 func (sle Sle) transponate() Sle {
 	transp, _ := sle.matrix.Transponate()
-	return Sle{transp, sle.solutions}
+	return sle.cloneSle(transp, sle.solutions)
 }
 
 func (sle Sle) getInverseMatrix() (Sle, error) {
