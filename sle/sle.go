@@ -34,19 +34,6 @@ func CreateSle(m [][]float64) (Sle, error) {
 	return Sle{nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
-func (m MatrSlice) getMinorsMatrix() MatrSlice {
-	size := len(m)
-	res := MakeMatrix(size, size)
-	for i, l := range m {
-		for j := range l {
-			det := m.GetMinor(i, j).determinant()
-			//fmt.Printf("[DETERMINANT = %f]\n", det)
-			res[i][j] = det
-		}
-	}
-	return res
-}
-
 func (sle Sle) getMinorsMatrix() Sle {
 	size := len(sle.matrix)
 	res := MakeMatrix(size, size)
@@ -58,20 +45,6 @@ func (sle Sle) getMinorsMatrix() Sle {
 		}
 	}
 	return Sle{res, sle.solutions}
-}
-
-func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
-	flag, lineFlag := 1, 1
-	res := MakeMatrix(len(m), len(m))
-	for i, l := range m {
-		flag = lineFlag
-		for j, el := range l {
-			res[i][j] = el * float64(flag)
-			flag = -flag
-		}
-		lineFlag = -lineFlag
-	}
-	return res
 }
 
 func (sle Sle) getAlgComplemetsMatr() Sle {
@@ -86,18 +59,6 @@ func (sle Sle) getAlgComplemetsMatr() Sle {
 		lineFlag = -lineFlag
 	}
 	return Sle{res, sle.solutions}
-}
-
-func (m MatrSlice) getInverseMatrix() (MatrSlice, error) {
-	det := m.determinant()
-	if det == 0 {
-		return nil, fmt.Errorf("Determinant of matrix is equal to 0")
-	}
-	minors := m.getMinorsMatrix()
-	compl := minors.getAlgComplemetsMatr()
-	transp, _ := compl.Transponate()
-	//res, _ := m.getMinorsMatrix().getAlgComplemetsMatr().Transponate()
-	return transp.Mult(1.0 / det), nil
 }
 
 func (sle Sle) transponate() Sle {
@@ -117,7 +78,7 @@ func (sle Sle) getInverseMatrix() (Sle, error) {
 
 //Solve returns a slice of solutions for SLE.
 func (sle Sle) Solve() ([]float64, error) {
-	inverseMatr, err := sle.matrix.getInverseMatrix()
+	inverseMatr, err := sle.getInverseMatrix()
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +86,7 @@ func (sle Sle) Solve() ([]float64, error) {
 	for i, el := range sle.solutions {
 		solutions[i][0] = el
 	}
-	res, err := inverseMatr.Multm(solutions)
+	res, err := inverseMatr.matrix.Multm(solutions)
 	if err != nil {
 		return nil, err
 	}
