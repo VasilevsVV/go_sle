@@ -47,6 +47,19 @@ func (m MatrSlice) getMinorsMatrix() MatrSlice {
 	return res
 }
 
+func (sle Sle) getMinorsMatrix() Sle {
+	size := len(sle.matrix)
+	res := MakeMatrix(size, size)
+	for i, l := range sle.matrix {
+		for j := range l {
+			det := sle.matrix.GetMinor(i, j).determinant()
+			//fmt.Printf("[DETERMINANT = %f]\n", det)
+			res[i][j] = det
+		}
+	}
+	return Sle{res, sle.solutions}
+}
+
 func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
 	flag, lineFlag := 1, 1
 	res := MakeMatrix(len(m), len(m))
@@ -61,6 +74,20 @@ func (m MatrSlice) getAlgComplemetsMatr() MatrSlice {
 	return res
 }
 
+func (sle Sle) getAlgComplemetsMatr() Sle {
+	flag, lineFlag := 1, 1
+	res := MakeMatrix(len(sle.matrix), len(sle.matrix))
+	for i, l := range sle.matrix {
+		flag = lineFlag
+		for j, el := range l {
+			res[i][j] = el * float64(flag)
+			flag = -flag
+		}
+		lineFlag = -lineFlag
+	}
+	return Sle{res, sle.solutions}
+}
+
 func (m MatrSlice) getInverseMatrix() (MatrSlice, error) {
 	det := m.determinant()
 	if det == 0 {
@@ -71,6 +98,21 @@ func (m MatrSlice) getInverseMatrix() (MatrSlice, error) {
 	transp, _ := compl.Transponate()
 	//res, _ := m.getMinorsMatrix().getAlgComplemetsMatr().Transponate()
 	return transp.Mult(1.0 / det), nil
+}
+
+func (sle Sle) transponate() Sle {
+	transp, _ := sle.matrix.Transponate()
+	return Sle{transp, sle.solutions}
+}
+
+func (sle Sle) getInverseMatrix() (Sle, error) {
+	det := sle.matrix.determinant()
+	if det == 0 {
+		return Sle{nil, nil}, fmt.Errorf("Determinant of matrix is equal to 0")
+	}
+	res := sle.getMinorsMatrix().getAlgComplemetsMatr().transponate()
+	res.matrix = res.matrix.Mult(1.0 / det)
+	return res, nil
 }
 
 //Solve returns a slice of solutions for SLE.
