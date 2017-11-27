@@ -80,7 +80,7 @@ func (sle Sle) transponate() Sle {
 func (sle Sle) getInverseMatrix() (Sle, error) {
 	det := sle.matrix.determinant()
 	if det == 0 {
-		return Sle{nil, nil}, fmt.Errorf("Determinant of matrix is equal to 0")
+		return sle.cloneSle(nil, nil), fmt.Errorf("Determinant of matrix is equal to 0")
 	}
 	res := sle.getMinorsMatrix().getAlgComplemetsMatr().transponate()
 	res.matrix = res.matrix.Mult(1.0 / det)
