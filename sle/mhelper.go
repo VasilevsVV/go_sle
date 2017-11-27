@@ -55,13 +55,7 @@ func (m MatrSlice) GetMinor(x, y int) MatrSlice {
 	var res [][]float64
 	for i, l := range m {
 		if i != x {
-			size := len(l)
-			newl := make([]float64, size-1, size-1)
-			copy(newl, l[:y])
-			for j := y + 1; j < size; j++ {
-				newl[j-1] = l[j]
-			}
-			res = append(res, newl)
+			res = append(res, remove(l, y))
 		}
 	}
 	return res
@@ -178,6 +172,16 @@ func (m MatrSlice) matrToVector() []float64 {
 			res[i] = el
 			i++
 		}
+	}
+	return res
+}
+
+func remove(slice []float64, i int) []float64 {
+	size := len(slice)
+	res := make([]float64, size-1, size-1)
+	copy(res, slice[:i])
+	for j := i + 1; j < size; j++ {
+		res[j-1] = slice[j]
 	}
 	return res
 }

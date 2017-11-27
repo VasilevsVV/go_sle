@@ -134,7 +134,7 @@ func TestSle(t *testing.T) {
 	// results = append(results, getLargeResult())
 
 	for i, in := range ins {
-		Sle, err := sle.CreateSle(in, false)
+		Sle, err := sle.CreateSle(in)
 		if err != nil {
 			t.Error(err)
 		}
