@@ -58,6 +58,14 @@ func (sle *Sle) DisableLog() {
 	(*sle).enableLog = false
 }
 
+func (sle Sle) getMinor(x, y int) Sle {
+	matr := sle.matrix.GetMinor(x, y)
+	res := sle.cloneSle(matr, sle.solutions)
+	res.lineIds = removeUint(sle.lineIds, x)
+	res.colIds = removeUint(sle.colIds, y)
+	return res
+}
+
 func (sle Sle) getMinorsMatrix() Sle {
 	size := len(sle.matrix)
 	res := MakeMatrix(size, size)

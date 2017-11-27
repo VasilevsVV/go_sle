@@ -186,6 +186,16 @@ func remove(slice []float64, i int) []float64 {
 	return res
 }
 
+func removeUint(slice []uint64, i int) []uint64 {
+	size := len(slice)
+	res := make([]uint64, size-1, size-1)
+	copy(res, slice[:i])
+	for j := i + 1; j < size; j++ {
+		res[j-1] = slice[j]
+	}
+	return res
+}
+
 //CompareSlices is comparing two slices
 func CompareSlices(sl1, sl2 []float64) bool {
 	if len(sl1) != len(sl2) {
