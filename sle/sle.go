@@ -28,11 +28,11 @@ func validateMatrix(m [][]float64) (bool, MatrSlice, []float64) {
 }
 
 //CreateSle creates System of Linear Equations from simple matrix
-func CreateSle(m [][]float64, enableLog bool) (Sle, error) {
+func CreateSle(m [][]float64) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
 		lines, cols := matrix.genMatrixIds()
-		return Sle{matrix, solutions, enableLog, lines, cols}, nil
+		return Sle{matrix, solutions, false, lines, cols}, nil
 	}
 	return Sle{nil, nil, false, nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
@@ -45,6 +45,16 @@ func (sle Sle) log(str string) {
 	if sle.enableLog {
 		fmt.Print(str)
 	}
+}
+
+// EnableLog enables log messages in sle
+func (sle *Sle) EnableLog() {
+	(*sle).enableLog = true
+}
+
+// DisableLog disables log messages in sle
+func (sle *Sle) DisableLog() {
+	(*sle).enableLog = false
 }
 
 func (sle Sle) getMinorsMatrix() Sle {

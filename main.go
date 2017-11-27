@@ -73,12 +73,13 @@ func main() {
 	// 	{26, 0, -7, -1, 18, -5},
 	// 	{5, 8, 21, -5, 3, 13}}
 	matr := getMediumMatrix()
-	Sle, err := sle.CreateSle(matr, true)
+	Sle, err := sle.CreateSle(matr)
 	if err == nil {
 		Sle.Print()
 	} else {
 		fmt.Println(err)
 	}
+	Sle.EnableLog()
 
 	sleRes, err := Sle.Solve()
 	if err != nil {
