@@ -43,7 +43,7 @@ func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
 
 func (sle Sle) log(str string) {
 	if sle.enableLog {
-		fmt.Println(str)
+		fmt.Print(str)
 	}
 }
 
@@ -91,6 +91,7 @@ func (sle Sle) getInverseMatrix() (Sle, error) {
 
 //Solve returns a slice of solutions for SLE.
 func (sle Sle) Solve() ([]float64, error) {
+	sle.log(fmt.Sprintf("Lines : %d\nColumns : %d\n", sle.lineIds, sle.colIds))
 	inverseMatr, err := sle.getInverseMatrix()
 	if err != nil {
 		return nil, err
