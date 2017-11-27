@@ -16,6 +16,19 @@ func swpLines(m *[][]float64, l1, l2 int) {
 	(*m)[l2] = buf
 }
 
+func (m MatrSlice) genMatrixIds() ([]uint64, []uint64) {
+	length := len(m)
+	lines := make([]uint64, length, length)
+	cols := make([]uint64, len(m[0]), len(m[0]))
+	for i := range lines {
+		lines[i] = uint64(math.Pow(2.0, float64(i)))
+	}
+	for i := range cols {
+		cols[i] = uint64(math.Pow(2.0, float64(i+length)))
+	}
+	return lines, cols
+}
+
 // checkSquarness checks if matrix is square
 func (m MatrSlice) checkSquarness() int {
 	size := len(m)

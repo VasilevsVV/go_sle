@@ -6,14 +6,15 @@ import (
 
 // Sle is a structure to represent System of Linear Equations
 type Sle struct {
-	matrix    MatrSlice
-	solutions []float64
-	enableLog bool
+	matrix          MatrSlice
+	solutions       []float64
+	enableLog       bool
+	lineIds, colIds []uint64
 }
 
-func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
+func validateMatrix(m [][]float64) (bool, MatrSlice, []float64) {
 	size := len(m)
-	var resMatrix [][]float64
+	var resMatrix MatrSlice
 	var solutions []float64
 	for i := 0; i < size; i++ {
 		length := len(m[i])
@@ -30,13 +31,14 @@ func validateMatrix(m [][]float64) (bool, [][]float64, []float64) {
 func CreateSle(m [][]float64, enableLog bool) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
-		return Sle{matrix, solutions, enableLog}, nil
+		lines, cols := matrix.genMatrixIds()
+		return Sle{matrix, solutions, enableLog, lines, cols}, nil
 	}
-	return Sle{nil, nil, false}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, false, nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
-	return Sle{matrix, solutions, sle.enableLog}
+	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds}
 }
 
 func (sle Sle) log(str string) {
