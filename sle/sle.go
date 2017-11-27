@@ -10,6 +10,7 @@ type Sle struct {
 	solutions       []float64
 	enableLog       bool
 	lineIds, colIds []uint64
+	depth           int
 }
 
 func validateMatrix(m [][]float64) (bool, MatrSlice, []float64) {
@@ -32,13 +33,13 @@ func CreateSle(m [][]float64) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
 		lines, cols := matrix.genMatrixIds()
-		return Sle{matrix, solutions, false, lines, cols}, nil
+		return Sle{matrix, solutions, false, lines, cols, len(matrix)}, nil
 	}
-	return Sle{nil, nil, false, nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, false, nil, nil, 0}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
-	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds}
+	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds, sle.depth}
 }
 
 func (sle Sle) log(str string) {
