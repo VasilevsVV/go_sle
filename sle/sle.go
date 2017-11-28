@@ -58,12 +58,18 @@ func (sle *Sle) DisableLog() {
 	(*sle).enableLog = false
 }
 
+func (sle Sle) cloneMinor(matrix MatrSlice, lineIds, colIds []uint64) Sle {
+	return Sle{matrix, nil, sle.enableLog, lineIds, colIds, sle.depth - 1}
+}
+
 func (sle Sle) getMinor(x, y int) Sle {
 	matr := sle.matrix.GetMinor(x, y)
-	res := sle.cloneSle(matr, sle.solutions)
-	res.lineIds = removeUint(sle.lineIds, x)
-	res.colIds = removeUint(sle.colIds, y)
+	res := sle.cloneMinor(matr, removeUint(sle.lineIds, x), removeUint(sle.colIds, y))
 	return res
+}
+
+func (sle Sle) determinant() float64 {
+	return sle.matrix.determinant()
 }
 
 func (sle Sle) getMinorsMatrix() Sle {
@@ -71,7 +77,7 @@ func (sle Sle) getMinorsMatrix() Sle {
 	res := MakeMatrix(size, size)
 	for i, l := range sle.matrix {
 		for j := range l {
-			det := sle.matrix.GetMinor(i, j).determinant()
+			det := sle.getMinor(i, j).determinant()
 			sle.log(fmt.Sprintf("[DETERMINANT = %f]\n", det))
 			res[i][j] = det
 		}
