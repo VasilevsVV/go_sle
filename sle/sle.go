@@ -65,13 +65,27 @@ func (sle Sle) cloneMinor(matrix MatrSlice, lineIds, colIds []uint64) Sle {
 }
 
 func (sle Sle) getMinor(x, y int) Sle {
-	matr := sle.matrix.GetMinor(x, y)
-	res := sle.cloneMinor(matr, removeUint(sle.lineIds, x), removeUint(sle.colIds, y))
-	return res
+	sle.matrix = sle.matrix.GetMinor(x, y)
+	sle.lineIds = removeUint(sle.lineIds, x)
+	sle.colIds = removeUint(sle.colIds, y)
+	sle.depth--
+	return sle
 }
 
 func (sle Sle) determinant() float64 {
-	return sle.matrix.determinant()
+	switch {
+	case sle.depth == 2:
+		return sle.matrix[0][0]*sle.matrix[1][1] -
+			sle.matrix[0][1]*sle.matrix[1][0]
+	case sle.depth <= 4:
+		return sle.matrix.determinant()
+	default:
+		var res float64
+		for i, f := 0, 1.0; i < sle.depth; i, f = i+1, -f {
+			res += f * sle.matrix[i][0] * sle.getMinor(i, 0).determinant()
+		}
+		return res
+	}
 }
 
 func (sle Sle) getMinorsMatrix() Sle {
