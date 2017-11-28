@@ -116,7 +116,7 @@ func (sle Sle) getMinorsMatrix() Sle {
 	for i, l := range sle.matrix {
 		for j := range l {
 			det := sle.getMinor(i, j).determinant()
-			sle.log(fmt.Sprintf("[DETERMINANT = %f]\n", det))
+			sle.log(fmt.Sprintf("[DETERMINANT [%d, %d] = %f]\n", i, j, det))
 			res[i][j] = det
 		}
 	}
