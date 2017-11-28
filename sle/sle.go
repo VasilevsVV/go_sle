@@ -72,7 +72,15 @@ func (sle Sle) getMinor(x, y int) Sle {
 	return sle
 }
 
-func (sle Sle) determinant() float64 {
+func (sle Sle) getIndex() uint64 {
+	var res uint64
+	for i := range sle.lineIds {
+		res += sle.lineIds[i] + sle.colIds[i]
+	}
+	return res
+}
+
+func (sle Sle) determinantAux() float64 {
 	switch {
 	case sle.depth == 2:
 		return sle.matrix[0][0]*sle.matrix[1][1] -
@@ -86,6 +94,17 @@ func (sle Sle) determinant() float64 {
 		}
 		return res
 	}
+}
+
+func (sle Sle) determinant() float64 {
+	index := sle.getIndex()
+	res, ok := (*sle.cache)[index]
+	if ok {
+		return res
+	}
+	res = sle.determinantAux()
+	(*sle.cache)[index] = res
+	return res
 }
 
 func (sle Sle) getMinorsMatrix() Sle {
