@@ -100,7 +100,7 @@ func (sle Sle) determinant() float64 {
 	index := sle.getIndex()
 	res, ok := (*sle.cache)[index]
 	if ok {
-		if sle.depth >= len(sle.solutions)-1 {
+		if sle.depth >= len(sle.solutions)-2 {
 			sle.log(fmt.Sprintf("Determinant = %f\n", res))
 		}
 		return res

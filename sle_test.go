@@ -130,8 +130,8 @@ func TestSle(t *testing.T) {
 	ins = append(ins, getBigMatrix())
 	results = append(results, getBigResult())
 
-	// ins = append(ins, getLargeMatrix())
-	// results = append(results, getLargeResult())
+	ins = append(ins, getLargeMatrix())
+	results = append(results, getLargeResult())
 
 	for i, in := range ins {
 		Sle, err := sle.CreateSle(in)
