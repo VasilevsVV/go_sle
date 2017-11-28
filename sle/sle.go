@@ -85,8 +85,8 @@ func (sle Sle) determinantAux() float64 {
 	case sle.depth == 2:
 		return sle.matrix[0][0]*sle.matrix[1][1] -
 			sle.matrix[0][1]*sle.matrix[1][0]
-	case sle.depth <= 4:
-		return sle.matrix.determinant()
+	// case sle.depth <= 3:
+	// 	return sle.matrix.determinant()
 	default:
 		var res float64
 		for i, f := 0, 1.0; i < sle.depth; i, f = i+1, -f {
