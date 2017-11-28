@@ -100,6 +100,9 @@ func (sle Sle) determinant() float64 {
 	index := sle.getIndex()
 	res, ok := (*sle.cache)[index]
 	if ok {
+		if sle.depth >= len(sle.solutions)-1 {
+			sle.log(fmt.Sprintf("Determinant = %f\n", res))
+		}
 		return res
 	}
 	res = sle.determinantAux()
@@ -140,7 +143,7 @@ func (sle Sle) transponate() Sle {
 }
 
 func (sle Sle) getInverseMatrix() (Sle, error) {
-	det := sle.matrix.determinant()
+	det := sle.determinant()
 	if det == 0 {
 		return sle.cloneSle(nil, nil), fmt.Errorf("Determinant of matrix is equal to 0")
 	}
