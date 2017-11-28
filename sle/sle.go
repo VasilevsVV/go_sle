@@ -11,6 +11,7 @@ type Sle struct {
 	enableLog       bool
 	lineIds, colIds []uint64
 	depth           int
+	cache           *map[uint64]float64
 }
 
 func validateMatrix(m [][]float64) (bool, MatrSlice, []float64) {
@@ -33,13 +34,14 @@ func CreateSle(m [][]float64) (Sle, error) {
 	test, matrix, solutions := validateMatrix(m)
 	if test {
 		lines, cols := matrix.genMatrixIds()
-		return Sle{matrix, solutions, false, lines, cols, len(matrix)}, nil
+		return Sle{matrix, solutions, false, lines, cols, len(matrix),
+			&map[uint64]float64{}}, nil
 	}
-	return Sle{nil, nil, false, nil, nil, 0}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, false, nil, nil, 0, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
-	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds, sle.depth}
+	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds, sle.depth, sle.cache}
 }
 
 func (sle Sle) log(str string) {
@@ -59,7 +61,7 @@ func (sle *Sle) DisableLog() {
 }
 
 func (sle Sle) cloneMinor(matrix MatrSlice, lineIds, colIds []uint64) Sle {
-	return Sle{matrix, nil, sle.enableLog, lineIds, colIds, sle.depth - 1}
+	return Sle{matrix, nil, sle.enableLog, lineIds, colIds, sle.depth - 1, sle.cache}
 }
 
 func (sle Sle) getMinor(x, y int) Sle {
