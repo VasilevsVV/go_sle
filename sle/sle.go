@@ -2,6 +2,8 @@ package sle
 
 import (
 	"fmt"
+	"runtime"
+	"sync"
 )
 
 // Sle is a structure to represent System of Linear Equations
@@ -12,6 +14,7 @@ type Sle struct {
 	lineIds, colIds []uint64
 	depth           int
 	cache           *map[uint64]float64
+	mutex           *sync.Mutex
 }
 
 func validateMatrix(m [][]float64) (bool, MatrSlice, []float64) {
@@ -35,13 +38,13 @@ func CreateSle(m [][]float64) (Sle, error) {
 	if test {
 		lines, cols := matrix.genMatrixIds()
 		return Sle{matrix, solutions, false, lines, cols, len(matrix),
-			&map[uint64]float64{}}, nil
+			&map[uint64]float64{}, &sync.Mutex{}}, nil
 	}
-	return Sle{nil, nil, false, nil, nil, 0, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
+	return Sle{nil, nil, false, nil, nil, 0, nil, nil}, fmt.Errorf("Not valid matrix\n %f\n passed to CreateSle", m)
 }
 
 func (sle Sle) cloneSle(matrix MatrSlice, solutions []float64) Sle {
-	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds, sle.depth, sle.cache}
+	return Sle{matrix, solutions, sle.enableLog, sle.lineIds, sle.colIds, sle.depth, sle.cache, sle.mutex}
 }
 
 func (sle Sle) log(str string) {
@@ -61,7 +64,7 @@ func (sle *Sle) DisableLog() {
 }
 
 func (sle Sle) cloneMinor(matrix MatrSlice, lineIds, colIds []uint64) Sle {
-	return Sle{matrix, nil, sle.enableLog, lineIds, colIds, sle.depth - 1, sle.cache}
+	return Sle{matrix, nil, sle.enableLog, lineIds, colIds, sle.depth - 1, sle.cache, sle.mutex}
 }
 
 func (sle Sle) getMinor(x, y int) Sle {
@@ -85,8 +88,6 @@ func (sle Sle) determinantAux() float64 {
 	case sle.depth == 2:
 		return sle.matrix[0][0]*sle.matrix[1][1] -
 			sle.matrix[0][1]*sle.matrix[1][0]
-	// case sle.depth <= 3:
-	// 	return sle.matrix.determinant()
 	default:
 		var res float64
 		for i, f := 0, 1.0; i < sle.depth; i, f = i+1, -f {
@@ -98,7 +99,9 @@ func (sle Sle) determinantAux() float64 {
 
 func (sle Sle) determinant() float64 {
 	index := sle.getIndex()
+	sle.mutex.Lock()
 	res, ok := (*sle.cache)[index]
+	sle.mutex.Unlock()
 	if ok {
 		if sle.depth >= len(sle.solutions)-1 {
 			sle.log(fmt.Sprintf("Determinant = %f\n", res))
@@ -106,19 +109,32 @@ func (sle Sle) determinant() float64 {
 		return res
 	}
 	res = sle.determinantAux()
+	sle.mutex.Lock()
 	(*sle.cache)[index] = res
+	sle.mutex.Unlock()
 	return res
 }
 
 func (sle Sle) getMinorsMatrix() Sle {
 	size := len(sle.matrix)
 	res := MakeMatrix(size, size)
+	var channels []*chan []float64
 	for i, l := range sle.matrix {
-		for j := range l {
-			det := sle.getMinor(i, j).determinant()
-			sle.log(fmt.Sprintf("[DETERMINANT [%d, %d] = %f]\n", i, j, det))
-			res[i][j] = det
-		}
+		ch := make(chan []float64)
+		channels = append(channels, &ch)
+		go func(i int, l []float64, ch chan []float64) {
+			vector := make([]float64, len(l), len(l))
+			for j := range l {
+				det := sle.getMinor(i, j).determinant()
+				sle.log(fmt.Sprintf("[DETERMINANT [%d, %d] = %f]\n", i, j, det))
+				vector[j] = det
+			}
+			ch <- vector
+			close(ch)
+		}(i, l, ch)
+	}
+	for i := range res {
+		res[i] = <-*channels[i]
 	}
 	return sle.cloneSle(res, sle.solutions)
 }
@@ -154,6 +170,8 @@ func (sle Sle) getInverseMatrix() (Sle, error) {
 
 //Solve returns a slice of solutions for SLE.
 func (sle Sle) Solve() ([]float64, error) {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	sle.log(fmt.Sprintf("Num of threads set to : %d\n", runtime.NumCPU()))
 	sle.log(fmt.Sprintf("Lines : %d\nColumns : %d\n", sle.lineIds, sle.colIds))
 	inverseMatr, err := sle.getInverseMatrix()
 	if err != nil {
@@ -167,6 +185,7 @@ func (sle Sle) Solve() ([]float64, error) {
 	if err != nil {
 		return nil, err
 	}
+	runtime.GOMAXPROCS(1)
 	return res.matrToVector(), nil
 }
 
