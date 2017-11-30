@@ -59,6 +59,27 @@ func getBigTestMatrix() sle.MatrSlice {
 	}
 }
 
+func get16Matrix() sle.MatrSlice {
+	return [][]float64{
+		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10},
+		{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20},
+		{0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30},
+		{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40},
+		{0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50},
+		{0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60},
+		{0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70},
+		{0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 80},
+		{0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 90},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 100},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 110},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 120},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 130},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 140},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 150},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 160},
+	}
+}
+
 func get20Matrix() sle.MatrSlice {
 	return [][]float64{
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10},
@@ -86,6 +107,11 @@ func get20Matrix() sle.MatrSlice {
 
 func getBigTestResult() []float64 {
 	return []float64{10, 20, 30, 40, 50, 60, 70, 80, 90, 100}
+}
+
+func get16Result() []float64 {
+	return []float64{10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+		110, 120, 130, 140, 150, 160}
 }
 
 func get20Result() []float64 {
@@ -163,8 +189,11 @@ func TestSle(t *testing.T) {
 	ins = append(ins, getLargeMatrix())
 	results = append(results, getLargeResult())
 
-	ins = append(ins, get20Matrix())
-	results = append(results, get20Result())
+	ins = append(ins, get16Matrix())
+	results = append(results, get16Result())
+
+	// ins = append(ins, get20Matrix())
+	// results = append(results, get20Result())
 
 	for i, in := range ins {
 		Sle, err := sle.CreateSle(in)
